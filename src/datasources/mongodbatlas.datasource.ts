@@ -1,10 +1,11 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+import {environment} from '../config/environments';
 
 const config = {
   name: 'mongodbatlas',
   connector: 'mongodb',
-  url: 'mongodb+srv://vividly7494:9PkwCBP6om@clusterpweb.oxzlmpb.mongodb.net/testDbMongo?retryWrites=true&w=majority',
+  url: `mongodb+srv://${environment.mongodbconn}@clusterpweb.oxzlmpb.mongodb.net/testDbMongo?retryWrites=true&w=majority`,
   host: '',
   port: 0,
   user: '',
