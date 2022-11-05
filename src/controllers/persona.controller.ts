@@ -41,7 +41,16 @@ export class PersonaController {
     if (!persona) throw new HttpErrors[401]('Los datos ingresados no son validos');
 
     let token = this.authenticationService.generateTokenJWTObject(persona);
-    this.authenticationService.enviarSMS(`Se ha logueado con exito:\n ${persona.correo}`, environment.TEST_PNUMBER);
+    // this.authenticationService.enviarSMS(`Se ha logueado con exito:\n ${persona.correo}`, environment.TEST_PNUMBER);
+
+    let message = `
+                  <h3>Bienvenido ${persona.nombres} ${persona.apellidos} a la app </h3>
+                  <p>Prueba de sengrid</p>
+                  <p>Vas a recibir mensajes a ${persona.celular}</p>
+                  <p>Vas a recibir correos a ${persona.correo}</p>
+                  <img str="https://es.wikipedia.org/wiki/Wikipedia:Portada#/media/Archivo:La_campi%C3%B1a_romana,1639,_Claude_Lorrain.jpg">
+                  `;
+    this.authenticationService.enviarCorreo(environment.TEST_MAIL, 'Test correo de proyecto', message);
 
     return {
       data: persona,

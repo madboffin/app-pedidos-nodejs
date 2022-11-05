@@ -1,5 +1,6 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
+import sgMail from '@sendgrid/mail';
 import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 import passwordGenerator from 'password-generator';
@@ -7,7 +8,7 @@ import twilio from 'twilio';
 import {environment} from '../config/environments';
 import {Persona} from '../models';
 import {PersonaRepository} from '../repositories';
-
+// const sgMail = require('@sendgrid/mail')
 @injectable({scope: BindingScope.TRANSIENT})
 export class AuthenticationService {
 
@@ -147,5 +148,26 @@ export class AuthenticationService {
         console.log(message.sid);
         return message.sid;
       });
+  }
+
+  enviarCorreo(to: string, subject: string, message: string,): boolean {
+
+    sgMail.setApiKey(environment.SENDGRID_API_KEY)
+    const msg = {
+      to: to, // Change to your recipient
+      from: environment.senderSendGrid, // Change to your verified sender
+      subject: subject,
+      text: message,
+      html: message
+    }
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error: any) => {
+        console.error(error)
+      })
+    return false;
   }
 }
