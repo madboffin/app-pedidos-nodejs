@@ -37,18 +37,16 @@ export class PersonaController {
 
     // version 2.0
     let persona = await this.authenticationService.loginAsync(usuario.correo, usuario.password);
-    if (persona) {
-      let token = this.authenticationService.generateTokenJWTObject(persona);
+    if (!persona) throw new HttpErrors[401]('Los datos ingresados no son validos');
 
-      return {
-        data: persona,
-        status: 'ok',
-        token: token
-      };
-    } else {
-      throw new HttpErrors[401]('Los datos ingresados no son validos');
-    }
+    let token = this.authenticationService.generateTokenJWTObject(persona);
+    this.authenticationService.enviarSMS('Mensaje de prueba grupo 40 08:44 \nSegunda linea');
 
+    return {
+      data: persona,
+      status: 'ok',
+      token: token
+    };
   }
 
   @post('/personas')

@@ -128,4 +128,21 @@ export class AuthenticationService {
       return false;
     }
   }
+
+  enviarSMS(mensaje: string): void {
+    const accountSid = environment.TWILIO_ACCOUNT_SID;
+    const authToken = environment.TWILIO_AUTH_TOKEN;
+    const client = require('twilio')(accountSid, authToken);
+
+    client.messages
+      .create({
+        body: mensaje,
+        from: environment.TWILIO_PNUMBER,
+        to: environment.TEST_PNUMBER
+      })
+      .then((message: any) => {
+        console.log(message.sid);
+        return message.sid;
+      });
+  }
 }
