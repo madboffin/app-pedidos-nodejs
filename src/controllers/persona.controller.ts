@@ -13,6 +13,7 @@ import {
   getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
+import {environment} from '../config/environments';
 import {Persona, Usuario} from '../models';
 import {PersonaRepository} from '../repositories';
 import {AuthenticationService} from '../services';
@@ -40,7 +41,7 @@ export class PersonaController {
     if (!persona) throw new HttpErrors[401]('Los datos ingresados no son validos');
 
     let token = this.authenticationService.generateTokenJWTObject(persona);
-    this.authenticationService.enviarSMS('Mensaje de prueba grupo 40 08:44 \nSegunda linea');
+    this.authenticationService.enviarSMS(`Se ha logueado con exito:\n ${persona.correo}`, environment.TEST_PNUMBER);
 
     return {
       data: persona,
@@ -67,7 +68,15 @@ export class PersonaController {
     })
     persona: Omit<Persona, 'id'>,
   ): Promise<Persona> {
+
+    // Encriptar clave
     persona.clave = this.authenticationService.encriptar(persona.clave);
+
+    // Mensaje de bienvenida SMS
+    let mensaje = `Bienvenido ${persona.nombres} a tu app`
+    let numeroCel = `+57${persona.celular}`
+    this.authenticationService.enviarSMS(mensaje, numeroCel);
+
     return this.personaRepository.create(persona);
   }
 

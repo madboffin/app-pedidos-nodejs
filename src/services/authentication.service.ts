@@ -3,6 +3,7 @@ import {repository} from '@loopback/repository';
 import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 import passwordGenerator from 'password-generator';
+import twilio from 'twilio';
 import {environment} from '../config/environments';
 import {Persona} from '../models';
 import {PersonaRepository} from '../repositories';
@@ -11,6 +12,11 @@ import {PersonaRepository} from '../repositories';
 export class AuthenticationService {
 
   secretkey = environment.secretKeyAES;
+  accountSid = environment.TWILIO_ACCOUNT_SID;
+  authToken = environment.TWILIO_AUTH_TOKEN;
+  client = twilio(this.accountSid, this.authToken);
+
+
   constructor(
     @repository(PersonaRepository)
     public personaRepository: PersonaRepository
@@ -129,16 +135,13 @@ export class AuthenticationService {
     }
   }
 
-  enviarSMS(mensaje: string): void {
-    const accountSid = environment.TWILIO_ACCOUNT_SID;
-    const authToken = environment.TWILIO_AUTH_TOKEN;
-    const client = require('twilio')(accountSid, authToken);
+  enviarSMS(mensaje: string, numeroDestino: string): void {
 
-    client.messages
+    this.client.messages
       .create({
         body: mensaje,
         from: environment.TWILIO_PNUMBER,
-        to: environment.TEST_PNUMBER
+        to: numeroDestino
       })
       .then((message: any) => {
         console.log(message.sid);
